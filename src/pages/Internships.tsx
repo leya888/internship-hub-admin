@@ -120,18 +120,18 @@ const Internships = () => {
           <div>
             <h1 className="text-2xl font-bold tracking-tight">Stages</h1>
             <p className="text-muted-foreground">
-              Gérez les jurys de soutenance de stage.
+              Gérez les soutenances de stages.
             </p>
           </div>
           <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
             <DialogTrigger asChild>
-              <Button>Ajouter un jury</Button>
+              <Button>Ajouter un stage</Button>
             </DialogTrigger>
             <DialogContent>
               <DialogHeader>
-                <DialogTitle>Ajouter un nouveau jury</DialogTitle>
+                <DialogTitle>Ajouter un nouveau stage</DialogTitle>
                 <DialogDescription>
-                  Veuillez remplir les informations du jury.
+                  Veuillez remplir les informations du stage.
                 </DialogDescription>
               </DialogHeader>
               <div className="grid gap-4 py-4">
@@ -252,9 +252,9 @@ const Internships = () => {
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Modifier le jury</DialogTitle>
+            <DialogTitle>Modifier le stage</DialogTitle>
             <DialogDescription>
-              Modifiez les informations du jury.
+              Modifiez les informations du stage.
             </DialogDescription>
           </DialogHeader>
           {editingInternship && (

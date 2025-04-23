@@ -1,15 +1,14 @@
 
 import { MainLayout } from "@/components/layout/MainLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
-const dashboardData = [
-  { name: 'Jan', value: 3 },
-  { name: 'Fév', value: 5 },
-  { name: 'Mar', value: 7 },
-  { name: 'Avr', value: 9 },
-  { name: 'Mai', value: 12 },
-  { name: 'Juin', value: 15 },
+// Mock data for recent stages - in a real app this would come from your backend
+const recentStages = [
+  { id: 1, etudiant: "Marie Dupont", date: "2025-04-20" },
+  { id: 2, etudiant: "Lucas Martin", date: "2025-04-19" },
+  { id: 3, etudiant: "Emma Bernard", date: "2025-04-18" },
+  { id: 4, etudiant: "Thomas Petit", date: "2025-04-17" },
+  { id: 5, etudiant: "Sophie Laurent", date: "2025-04-16" },
 ];
 
 const Dashboard = () => {
@@ -46,7 +45,7 @@ const Dashboard = () => {
           </Card>
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Stages actifs</CardTitle>
+              <CardTitle className="text-sm font-medium">Nombre de stages affectés</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">28</div>
@@ -57,21 +56,25 @@ const Dashboard = () => {
           </Card>
         </div>
         
-        <div className="grid gap-4 md:grid-cols-1 lg:grid-cols-1">
-          <Card className="col-span-4">
+        <div className="grid gap-4">
+          <Card>
             <CardHeader>
-              <CardTitle>Évolution des stages</CardTitle>
+              <CardTitle>Stages récents</CardTitle>
             </CardHeader>
-            <CardContent className="pl-2">
-              <ResponsiveContainer width="100%" height={300}>
-                <LineChart data={dashboardData}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="name" />
-                  <YAxis />
-                  <Tooltip />
-                  <Line type="monotone" dataKey="value" stroke="#3b82f6" strokeWidth={2} />
-                </LineChart>
-              </ResponsiveContainer>
+            <CardContent>
+              <div className="space-y-2">
+                {recentStages.map((stage) => (
+                  <div
+                    key={stage.id}
+                    className="flex items-center justify-between border-b py-2 last:border-0"
+                  >
+                    <div className="font-medium">{stage.etudiant}</div>
+                    <div className="text-sm text-muted-foreground">
+                      {new Date(stage.date).toLocaleDateString('fr-FR')}
+                    </div>
+                  </div>
+                ))}
+              </div>
             </CardContent>
           </Card>
         </div>
