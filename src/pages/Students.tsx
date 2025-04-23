@@ -1,7 +1,13 @@
-
 import { useState } from "react";
 import { MainLayout } from "@/components/layout/MainLayout";
 import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import {
   Table,
   TableBody,
@@ -31,15 +37,22 @@ import { useToast } from "@/components/ui/use-toast";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-// Données d'exemple pour les étudiants
 interface Student {
   id: number;
   nom: string;
   prenom: string;
   email: string;
-  formation: string;
-  annee: string;
+  cin: string;
+  classe: string;
 }
+
+const CLASSES = [
+  "1ère TI",
+  "2ème DSI",
+  "2ème MDW",
+  "3ème DSI",
+  "3ème MDW"
+] as const;
 
 const initialStudents: Student[] = [
   {
@@ -47,40 +60,40 @@ const initialStudents: Student[] = [
     nom: "Dupont",
     prenom: "Marie",
     email: "marie.dupont@example.com",
-    formation: "Informatique",
-    annee: "3ème année",
+    cin: "12345678",
+    classe: "2ème DSI",
   },
   {
     id: 2,
     nom: "Martin",
     prenom: "Lucas",
     email: "lucas.martin@example.com",
-    formation: "Électronique",
-    annee: "2ème année",
+    cin: "98765432",
+    classe: "2ème MDW",
   },
   {
     id: 3,
     nom: "Bernard",
     prenom: "Emma",
     email: "emma.bernard@example.com",
-    formation: "Informatique",
-    annee: "1ère année",
+    cin: "34567890",
+    classe: "1ère TI",
   },
   {
     id: 4,
     nom: "Petit",
     prenom: "Thomas",
     email: "thomas.petit@example.com",
-    formation: "Réseaux",
-    annee: "3ème année",
+    cin: "56789012",
+    classe: "3ème DSI",
   },
   {
     id: 5,
     nom: "Richard",
     prenom: "Chloé",
     email: "chloe.richard@example.com",
-    formation: "Informatique",
-    annee: "2ème année",
+    cin: "78901234",
+    classe: "2ème DSI",
   },
 ];
 
@@ -90,8 +103,8 @@ const Students = () => {
     nom: "",
     prenom: "",
     email: "",
-    formation: "",
-    annee: "",
+    cin: "",
+    classe: "",
   });
   const [editingStudent, setEditingStudent] = useState<Student | null>(null);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
@@ -99,10 +112,36 @@ const Students = () => {
   const [deleteConfirmId, setDeleteConfirmId] = useState<number | null>(null);
   const { toast } = useToast();
 
+  const validateCIN = (cin: string) => {
+    return /^\d{8}$/.test(cin);
+  };
+
+  const isCINUnique = (cin: string, excludeId?: number) => {
+    return !students.some(student => student.cin === cin && student.id !== excludeId);
+  };
+
   const handleAddStudent = () => {
+    if (!validateCIN(newStudent.cin)) {
+      toast({
+        title: "Erreur",
+        description: "Le CIN doit contenir exactement 8 chiffres.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!isCINUnique(newStudent.cin)) {
+      toast({
+        title: "Erreur",
+        description: "Ce CIN existe déjà.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     const newId = Math.max(...students.map((s) => s.id), 0) + 1;
     setStudents([...students, { id: newId, ...newStudent }]);
-    setNewStudent({ nom: "", prenom: "", email: "", formation: "", annee: "" });
+    setNewStudent({ nom: "", prenom: "", email: "", cin: "", classe: "" });
     setIsAddDialogOpen(false);
     toast({
       title: "Étudiant ajouté",
@@ -138,7 +177,7 @@ const Students = () => {
           <div>
             <h1 className="text-2xl font-bold tracking-tight">Étudiants</h1>
             <p className="text-muted-foreground">
-              Gérez les étudiants inscrits dans votre établissement.
+              Gérez les étudiants de votre établissement.
             </p>
           </div>
           <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
@@ -180,23 +219,32 @@ const Students = () => {
                     onChange={(e) => setNewStudent({ ...newStudent, email: e.target.value })}
                   />
                 </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="formation">Formation</Label>
-                    <Input
-                      id="formation"
-                      value={newStudent.formation}
-                      onChange={(e) => setNewStudent({ ...newStudent, formation: e.target.value })}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="annee">Année</Label>
-                    <Input
-                      id="annee"
-                      value={newStudent.annee}
-                      onChange={(e) => setNewStudent({ ...newStudent, annee: e.target.value })}
-                    />
-                  </div>
+                <div className="space-y-2">
+                  <Label htmlFor="cin">CIN (8 chiffres)</Label>
+                  <Input
+                    id="cin"
+                    value={newStudent.cin}
+                    onChange={(e) => setNewStudent({ ...newStudent, cin: e.target.value })}
+                    maxLength={8}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="classe">Classe</Label>
+                  <Select
+                    value={newStudent.classe}
+                    onValueChange={(value) => setNewStudent({ ...newStudent, classe: value })}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Sélectionnez une classe" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {CLASSES.map((classe) => (
+                        <SelectItem key={classe} value={classe}>
+                          {classe}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
               </div>
               <DialogFooter>
@@ -216,8 +264,8 @@ const Students = () => {
                 <TableHead>Nom</TableHead>
                 <TableHead>Prénom</TableHead>
                 <TableHead>Email</TableHead>
-                <TableHead>Formation</TableHead>
-                <TableHead>Année</TableHead>
+                <TableHead>CIN</TableHead>
+                <TableHead>Classe</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
@@ -227,8 +275,8 @@ const Students = () => {
                   <TableCell>{student.nom}</TableCell>
                   <TableCell>{student.prenom}</TableCell>
                   <TableCell>{student.email}</TableCell>
-                  <TableCell>{student.formation}</TableCell>
-                  <TableCell>{student.annee}</TableCell>
+                  <TableCell>{student.cin}</TableCell>
+                  <TableCell>{student.classe}</TableCell>
                   <TableCell className="text-right">
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
@@ -319,23 +367,32 @@ const Students = () => {
                   onChange={(e) => setEditingStudent({ ...editingStudent, email: e.target.value })}
                 />
               </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="edit-formation">Formation</Label>
-                  <Input
-                    id="edit-formation"
-                    value={editingStudent.formation}
-                    onChange={(e) => setEditingStudent({ ...editingStudent, formation: e.target.value })}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="edit-annee">Année</Label>
-                  <Input
-                    id="edit-annee"
-                    value={editingStudent.annee}
-                    onChange={(e) => setEditingStudent({ ...editingStudent, annee: e.target.value })}
-                  />
-                </div>
+              <div className="space-y-2">
+                <Label htmlFor="edit-cin">CIN</Label>
+                <Input
+                  id="edit-cin"
+                  value={editingStudent.cin}
+                  onChange={(e) => setEditingStudent({ ...editingStudent, cin: e.target.value })}
+                  maxLength={8}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="edit-classe">Classe</Label>
+                <Select
+                  value={editingStudent.classe}
+                  onValueChange={(value) => setEditingStudent({ ...editingStudent, classe: value })}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Sélectionnez une classe" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {CLASSES.map((classe) => (
+                      <SelectItem key={classe} value={classe}>
+                        {classe}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
             </div>
           )}

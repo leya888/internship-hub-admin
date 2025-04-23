@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { MainLayout } from "@/components/layout/MainLayout";
 import { Button } from "@/components/ui/button";
@@ -31,14 +30,12 @@ import { useToast } from "@/components/ui/use-toast";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-// Données d'exemple pour les enseignants
 interface Teacher {
   id: number;
   nom: string;
   prenom: string;
   email: string;
-  departement: string;
-  specialite: string;
+  cin: string;
 }
 
 const initialTeachers: Teacher[] = [
@@ -47,32 +44,28 @@ const initialTeachers: Teacher[] = [
     nom: "Dubois",
     prenom: "Philippe",
     email: "philippe.dubois@example.com",
-    departement: "Informatique",
-    specialite: "Développement Web",
+    cin: "12345678",
   },
   {
     id: 2,
     nom: "Laurent",
     prenom: "Sophie",
     email: "sophie.laurent@example.com",
-    departement: "Informatique",
-    specialite: "Systèmes d'exploitation",
+    cin: "98765432",
   },
   {
     id: 3,
     nom: "Moreau",
     prenom: "Jean",
     email: "jean.moreau@example.com",
-    departement: "Électronique",
-    specialite: "Circuits intégrés",
+    cin: "32145678",
   },
   {
     id: 4,
     nom: "Lefevre",
     prenom: "Amélie",
     email: "amelie.lefevre@example.com",
-    departement: "Réseaux",
-    specialite: "Cybersécurité",
+    cin: "65432187",
   },
 ];
 
@@ -82,8 +75,7 @@ const Teachers = () => {
     nom: "",
     prenom: "",
     email: "",
-    departement: "",
-    specialite: "",
+    cin: "",
   });
   const [editingTeacher, setEditingTeacher] = useState<Teacher | null>(null);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
@@ -91,10 +83,36 @@ const Teachers = () => {
   const [deleteConfirmId, setDeleteConfirmId] = useState<number | null>(null);
   const { toast } = useToast();
 
+  const validateCIN = (cin: string) => {
+    return /^\d{8}$/.test(cin);
+  };
+
+  const isCINUnique = (cin: string, excludeId?: number) => {
+    return !teachers.some(teacher => teacher.cin === cin && teacher.id !== excludeId);
+  };
+
   const handleAddTeacher = () => {
+    if (!validateCIN(newTeacher.cin)) {
+      toast({
+        title: "Erreur",
+        description: "Le CIN doit contenir exactement 8 chiffres.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!isCINUnique(newTeacher.cin)) {
+      toast({
+        title: "Erreur",
+        description: "Ce CIN existe déjà.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     const newId = Math.max(...teachers.map((t) => t.id), 0) + 1;
     setTeachers([...teachers, { id: newId, ...newTeacher }]);
-    setNewTeacher({ nom: "", prenom: "", email: "", departement: "", specialite: "" });
+    setNewTeacher({ nom: "", prenom: "", email: "", cin: "" });
     setIsAddDialogOpen(false);
     toast({
       title: "Enseignant ajouté",
@@ -172,23 +190,14 @@ const Teachers = () => {
                     onChange={(e) => setNewTeacher({ ...newTeacher, email: e.target.value })}
                   />
                 </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="departement">Département</Label>
-                    <Input
-                      id="departement"
-                      value={newTeacher.departement}
-                      onChange={(e) => setNewTeacher({ ...newTeacher, departement: e.target.value })}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="specialite">Spécialité</Label>
-                    <Input
-                      id="specialite"
-                      value={newTeacher.specialite}
-                      onChange={(e) => setNewTeacher({ ...newTeacher, specialite: e.target.value })}
-                    />
-                  </div>
+                <div className="space-y-2">
+                  <Label htmlFor="cin">CIN (8 chiffres)</Label>
+                  <Input
+                    id="cin"
+                    value={newTeacher.cin}
+                    onChange={(e) => setNewTeacher({ ...newTeacher, cin: e.target.value })}
+                    maxLength={8}
+                  />
                 </div>
               </div>
               <DialogFooter>
@@ -208,8 +217,7 @@ const Teachers = () => {
                 <TableHead>Nom</TableHead>
                 <TableHead>Prénom</TableHead>
                 <TableHead>Email</TableHead>
-                <TableHead>Département</TableHead>
-                <TableHead>Spécialité</TableHead>
+                <TableHead>CIN</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
@@ -219,8 +227,7 @@ const Teachers = () => {
                   <TableCell>{teacher.nom}</TableCell>
                   <TableCell>{teacher.prenom}</TableCell>
                   <TableCell>{teacher.email}</TableCell>
-                  <TableCell>{teacher.departement}</TableCell>
-                  <TableCell>{teacher.specialite}</TableCell>
+                  <TableCell>{teacher.cin}</TableCell>
                   <TableCell className="text-right">
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
@@ -311,23 +318,14 @@ const Teachers = () => {
                   onChange={(e) => setEditingTeacher({ ...editingTeacher, email: e.target.value })}
                 />
               </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="edit-departement">Département</Label>
-                  <Input
-                    id="edit-departement"
-                    value={editingTeacher.departement}
-                    onChange={(e) => setEditingTeacher({ ...editingTeacher, departement: e.target.value })}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="edit-specialite">Spécialité</Label>
-                  <Input
-                    id="edit-specialite"
-                    value={editingTeacher.specialite}
-                    onChange={(e) => setEditingTeacher({ ...editingTeacher, specialite: e.target.value })}
-                  />
-                </div>
+              <div className="space-y-2">
+                <Label htmlFor="edit-cin">CIN</Label>
+                <Input
+                  id="edit-cin"
+                  value={editingTeacher.cin}
+                  onChange={(e) => setEditingTeacher({ ...editingTeacher, cin: e.target.value })}
+                  maxLength={8}
+                />
               </div>
             </div>
           )}

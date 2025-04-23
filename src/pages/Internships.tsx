@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { MainLayout } from "@/components/layout/MainLayout";
 import { Button } from "@/components/ui/button";
@@ -30,106 +29,46 @@ import {
 import { useToast } from "@/components/ui/use-toast";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Badge } from "@/components/ui/badge";
 
-// Données d'exemple pour les stages
 interface Internship {
   id: number;
-  titre: string;
-  entreprise: string;
-  description: string;
-  duree: string;
-  dateDebut: string;
-  etudiant: string | null;
-  enseignant: string | null;
-  statut: "Disponible" | "Attribué" | "En cours" | "Terminé";
+  etudiant: string;
+  enseignant1: string;
+  enseignant2: string;
+  salle: string;
 }
 
 const initialInternships: Internship[] = [
   {
     id: 1,
-    titre: "Développement d'une application web",
-    entreprise: "Tech Solutions",
-    description: "Conception et développement d'une application web en utilisant React et Node.js.",
-    duree: "3 mois",
-    dateDebut: "2024-06-01",
     etudiant: "Marie Dupont",
-    enseignant: "Philippe Dubois",
-    statut: "Attribué",
+    enseignant1: "Philippe Dubois",
+    enseignant2: "Sophie Laurent",
+    salle: "A101",
   },
   {
     id: 2,
-    titre: "Analyse de données pour l'IA",
-    entreprise: "DataCore",
-    description: "Analyse et préparation de données pour le machine learning.",
-    duree: "4 mois",
-    dateDebut: "2024-07-01",
-    etudiant: null,
-    enseignant: null,
-    statut: "Disponible",
+    etudiant: "Lucas Martin",
+    enseignant1: "Jean Moreau",
+    enseignant2: "Amélie Lefevre",
+    salle: "B202",
   },
   {
     id: 3,
-    titre: "Sécurisation d'infrastructure réseau",
-    entreprise: "SecureNet",
-    description: "Audit et amélioration de la sécurité de l'infrastructure réseau.",
-    duree: "2 mois",
-    dateDebut: "2024-05-15",
-    etudiant: "Thomas Petit",
-    enseignant: "Amélie Lefevre",
-    statut: "En cours",
-  },
-  {
-    id: 4,
-    titre: "Développement d'applications mobiles",
-    entreprise: "MobileFirst",
-    description: "Création d'une application mobile avec Flutter.",
-    duree: "3 mois",
-    dateDebut: "2024-06-15",
-    etudiant: "Lucas Martin",
-    enseignant: "Sophie Laurent",
-    statut: "Attribué",
-  },
-  {
-    id: 5,
-    titre: "Conception d'une base de données",
-    entreprise: "DBSystems",
-    description: "Conception et implémentation d'une base de données pour un système de gestion.",
-    duree: "2 mois",
-    dateDebut: "2024-08-01",
-    etudiant: null,
-    enseignant: null,
-    statut: "Disponible",
+    etudiant: "Emma Bernard",
+    enseignant1: "Philippe Dubois",
+    enseignant2: "Sophie Laurent",
+    salle: "C303",
   },
 ];
-
-const getStatusColor = (status: string) => {
-  switch (status) {
-    case "Disponible":
-      return "bg-green-500 hover:bg-green-600";
-    case "Attribué":
-      return "bg-blue-500 hover:bg-blue-600";
-    case "En cours":
-      return "bg-yellow-500 hover:bg-yellow-600";
-    case "Terminé":
-      return "bg-gray-500 hover:bg-gray-600";
-    default:
-      return "bg-gray-500 hover:bg-gray-600";
-  }
-};
 
 const Internships = () => {
   const [internships, setInternships] = useState<Internship[]>(initialInternships);
   const [newInternship, setNewInternship] = useState<Omit<Internship, "id">>({
-    titre: "",
-    entreprise: "",
-    description: "",
-    duree: "",
-    dateDebut: "",
-    etudiant: null,
-    enseignant: null,
-    statut: "Disponible",
+    etudiant: "",
+    enseignant1: "",
+    enseignant2: "",
+    salle: "",
   });
   const [editingInternship, setEditingInternship] = useState<Internship | null>(null);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
@@ -141,14 +80,10 @@ const Internships = () => {
     const newId = Math.max(...internships.map((i) => i.id), 0) + 1;
     setInternships([...internships, { id: newId, ...newInternship }]);
     setNewInternship({
-      titre: "",
-      entreprise: "",
-      description: "",
-      duree: "",
-      dateDebut: "",
-      etudiant: null,
-      enseignant: null,
-      statut: "Disponible",
+      etudiant: "",
+      enseignant1: "",
+      enseignant2: "",
+      salle: "",
     });
     setIsAddDialogOpen(false);
     toast({
@@ -185,66 +120,52 @@ const Internships = () => {
           <div>
             <h1 className="text-2xl font-bold tracking-tight">Stages</h1>
             <p className="text-muted-foreground">
-              Gérez les offres de stages et leurs attributions.
+              Gérez les jurys de soutenance de stage.
             </p>
           </div>
           <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
             <DialogTrigger asChild>
-              <Button>Ajouter un stage</Button>
+              <Button>Ajouter un jury</Button>
             </DialogTrigger>
-            <DialogContent className="max-w-2xl">
+            <DialogContent>
               <DialogHeader>
-                <DialogTitle>Ajouter un nouveau stage</DialogTitle>
+                <DialogTitle>Ajouter un nouveau jury</DialogTitle>
                 <DialogDescription>
-                  Veuillez remplir les informations du stage.
+                  Veuillez remplir les informations du jury.
                 </DialogDescription>
               </DialogHeader>
               <div className="grid gap-4 py-4">
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="titre">Titre</Label>
-                    <Input
-                      id="titre"
-                      value={newInternship.titre}
-                      onChange={(e) => setNewInternship({ ...newInternship, titre: e.target.value })}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="entreprise">Entreprise</Label>
-                    <Input
-                      id="entreprise"
-                      value={newInternship.entreprise}
-                      onChange={(e) => setNewInternship({ ...newInternship, entreprise: e.target.value })}
-                    />
-                  </div>
-                </div>
                 <div className="space-y-2">
-                  <Label htmlFor="description">Description</Label>
-                  <Textarea
-                    id="description"
-                    value={newInternship.description}
-                    onChange={(e) => setNewInternship({ ...newInternship, description: e.target.value })}
-                    rows={3}
+                  <Label htmlFor="etudiant">Étudiant</Label>
+                  <Input
+                    id="etudiant"
+                    value={newInternship.etudiant}
+                    onChange={(e) => setNewInternship({ ...newInternship, etudiant: e.target.value })}
                   />
                 </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="duree">Durée</Label>
-                    <Input
-                      id="duree"
-                      value={newInternship.duree}
-                      onChange={(e) => setNewInternship({ ...newInternship, duree: e.target.value })}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="dateDebut">Date de début</Label>
-                    <Input
-                      id="dateDebut"
-                      type="date"
-                      value={newInternship.dateDebut}
-                      onChange={(e) => setNewInternship({ ...newInternship, dateDebut: e.target.value })}
-                    />
-                  </div>
+                <div className="space-y-2">
+                  <Label htmlFor="enseignant1">Enseignant 1</Label>
+                  <Input
+                    id="enseignant1"
+                    value={newInternship.enseignant1}
+                    onChange={(e) => setNewInternship({ ...newInternship, enseignant1: e.target.value })}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="enseignant2">Enseignant 2</Label>
+                  <Input
+                    id="enseignant2"
+                    value={newInternship.enseignant2}
+                    onChange={(e) => setNewInternship({ ...newInternship, enseignant2: e.target.value })}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="salle">Salle</Label>
+                  <Input
+                    id="salle"
+                    value={newInternship.salle}
+                    onChange={(e) => setNewInternship({ ...newInternship, salle: e.target.value })}
+                  />
                 </div>
               </div>
               <DialogFooter>
@@ -257,32 +178,24 @@ const Internships = () => {
           </Dialog>
         </div>
 
-        <div className="border rounded-md overflow-x-auto">
+        <div className="border rounded-md">
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Titre</TableHead>
-                <TableHead>Entreprise</TableHead>
-                <TableHead>Durée</TableHead>
-                <TableHead>Date de début</TableHead>
                 <TableHead>Étudiant</TableHead>
-                <TableHead>Enseignant</TableHead>
-                <TableHead>Statut</TableHead>
+                <TableHead>Enseignant 1</TableHead>
+                <TableHead>Enseignant 2</TableHead>
+                <TableHead>Salle</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {internships.map((internship) => (
                 <TableRow key={internship.id}>
-                  <TableCell className="font-medium">{internship.titre}</TableCell>
-                  <TableCell>{internship.entreprise}</TableCell>
-                  <TableCell>{internship.duree}</TableCell>
-                  <TableCell>{internship.dateDebut}</TableCell>
-                  <TableCell>{internship.etudiant || "-"}</TableCell>
-                  <TableCell>{internship.enseignant || "-"}</TableCell>
-                  <TableCell>
-                    <Badge className={getStatusColor(internship.statut)}>{internship.statut}</Badge>
-                  </TableCell>
+                  <TableCell>{internship.etudiant}</TableCell>
+                  <TableCell>{internship.enseignant1}</TableCell>
+                  <TableCell>{internship.enseignant2}</TableCell>
+                  <TableCell>{internship.salle}</TableCell>
                   <TableCell className="text-right">
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
@@ -337,92 +250,46 @@ const Internships = () => {
       </div>
 
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-        <DialogContent className="max-w-2xl">
+        <DialogContent>
           <DialogHeader>
-            <DialogTitle>Modifier le stage</DialogTitle>
+            <DialogTitle>Modifier le jury</DialogTitle>
             <DialogDescription>
-              Modifiez les informations du stage.
+              Modifiez les informations du jury.
             </DialogDescription>
           </DialogHeader>
           {editingInternship && (
             <div className="grid gap-4 py-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="edit-titre">Titre</Label>
-                  <Input
-                    id="edit-titre"
-                    value={editingInternship.titre}
-                    onChange={(e) => setEditingInternship({ ...editingInternship, titre: e.target.value })}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="edit-entreprise">Entreprise</Label>
-                  <Input
-                    id="edit-entreprise"
-                    value={editingInternship.entreprise}
-                    onChange={(e) => setEditingInternship({ ...editingInternship, entreprise: e.target.value })}
-                  />
-                </div>
-              </div>
               <div className="space-y-2">
-                <Label htmlFor="edit-description">Description</Label>
-                <Textarea
-                  id="edit-description"
-                  value={editingInternship.description}
-                  onChange={(e) => setEditingInternship({ ...editingInternship, description: e.target.value })}
-                  rows={3}
+                <Label htmlFor="edit-etudiant">Étudiant</Label>
+                <Input
+                  id="edit-etudiant"
+                  value={editingInternship.etudiant}
+                  onChange={(e) => setEditingInternship({ ...editingInternship, etudiant: e.target.value })}
                 />
               </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="edit-duree">Durée</Label>
-                  <Input
-                    id="edit-duree"
-                    value={editingInternship.duree}
-                    onChange={(e) => setEditingInternship({ ...editingInternship, duree: e.target.value })}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="edit-dateDebut">Date de début</Label>
-                  <Input
-                    id="edit-dateDebut"
-                    type="date"
-                    value={editingInternship.dateDebut}
-                    onChange={(e) => setEditingInternship({ ...editingInternship, dateDebut: e.target.value })}
-                  />
-                </div>
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="edit-etudiant">Étudiant</Label>
-                  <Input
-                    id="edit-etudiant"
-                    value={editingInternship.etudiant || ""}
-                    onChange={(e) => setEditingInternship({ ...editingInternship, etudiant: e.target.value || null })}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="edit-enseignant">Enseignant</Label>
-                  <Input
-                    id="edit-enseignant"
-                    value={editingInternship.enseignant || ""}
-                    onChange={(e) => setEditingInternship({ ...editingInternship, enseignant: e.target.value || null })}
-                  />
-                </div>
+              <div className="space-y-2">
+                <Label htmlFor="edit-enseignant1">Enseignant 1</Label>
+                <Input
+                  id="edit-enseignant1"
+                  value={editingInternship.enseignant1}
+                  onChange={(e) => setEditingInternship({ ...editingInternship, enseignant1: e.target.value })}
+                />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="edit-statut">Statut</Label>
-                <select
-                  id="edit-statut"
-                  value={editingInternship.statut}
-                  onChange={(e) => setEditingInternship({ ...editingInternship, statut: e.target.value as any })}
-                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                >
-                  <option value="Disponible">Disponible</option>
-                  <option value="Attribué">Attribué</option>
-                  <option value="En cours">En cours</option>
-                  <option value="Terminé">Terminé</option>
-                </select>
+                <Label htmlFor="edit-enseignant2">Enseignant 2</Label>
+                <Input
+                  id="edit-enseignant2"
+                  value={editingInternship.enseignant2}
+                  onChange={(e) => setEditingInternship({ ...editingInternship, enseignant2: e.target.value })}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="edit-salle">Salle</Label>
+                <Input
+                  id="edit-salle"
+                  value={editingInternship.salle}
+                  onChange={(e) => setEditingInternship({ ...editingInternship, salle: e.target.value })}
+                />
               </div>
             </div>
           )}
