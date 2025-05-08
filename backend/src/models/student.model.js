@@ -31,6 +31,13 @@ module.exports = (sequelize, Sequelize) => {
     },
     phoneNumber: {
       type: Sequelize.STRING
+    },
+    classId: {
+      type: Sequelize.INTEGER,
+      references: {
+        model: 'classes',
+        key: 'id'
+      }
     }
   });
 

@@ -22,6 +22,7 @@ db.sequelize = sequelize;
 db.students = require("./student.model.js")(sequelize, Sequelize);
 db.teachers = require("./teacher.model.js")(sequelize, Sequelize);
 db.internships = require("./internship.model.js")(sequelize, Sequelize);
+db.classes = require("./class.model.js")(sequelize, Sequelize);
 
 // Define relationships
 db.students.hasMany(db.internships, { as: "internships" });
@@ -40,6 +41,13 @@ db.teachers.belongsToMany(db.internships, {
   through: "InternshipTeachers",
   as: "internships",
   foreignKey: "teacherId",
+});
+
+// Class and student relationship
+db.classes.hasMany(db.students, { as: "students" });
+db.students.belongsTo(db.classes, {
+  foreignKey: "classId",
+  as: "class",
 });
 
 module.exports = db;

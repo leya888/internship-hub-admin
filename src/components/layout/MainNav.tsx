@@ -1,52 +1,44 @@
+import * as React from "react"
+import { Link } from "react-router-dom"
 
-import { Link, useLocation } from "react-router-dom";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/utils"
 
-interface NavItem {
-  title: string;
-  href: string;
-  icon?: React.ReactNode;
-}
-
-const navItems: NavItem[] = [
-  {
-    title: "Tableau de bord",
-    href: "/dashboard",
-  },
-  {
-    title: "Étudiants",
-    href: "/students",
-  },
-  {
-    title: "Enseignants",
-    href: "/teachers",
-  },
-  {
-    title: "Stages",
-    href: "/internships",
-  },
-];
-
-export function MainNav() {
-  const location = useLocation();
-
+export function MainNav({ className, ...props }: React.HTMLAttributes<HTMLElement>) {
   return (
-    <nav className="space-y-1">
-      {navItems.map((item) => (
-        <Link
-          key={item.href}
-          to={item.href}
-          className={cn(
-            "flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors",
-            location.pathname === item.href || 
-            (item.href !== "/dashboard" && location.pathname.startsWith(item.href))
-              ? "bg-sidebar-accent text-sidebar-accent-foreground"
-              : "text-sidebar-foreground hover:bg-sidebar-accent/50"
-          )}
-        >
-          {item.title}
-        </Link>
-      ))}
+    <nav
+      className={cn("flex items-center space-x-4 lg:space-x-6", className)}
+      {...props}
+    >
+      <Link
+        to="/dashboard"
+        className="text-sm font-medium transition-colors hover:text-primary"
+      >
+        Tableau de bord
+      </Link>
+      <Link
+        to="/students"
+        className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
+      >
+        Étudiants
+      </Link>
+      <Link
+        to="/teachers"
+        className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
+      >
+        Enseignants
+      </Link>
+      <Link
+        to="/internships"
+        className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
+      >
+        Stages
+      </Link>
+      <Link
+        to="/levels"
+        className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
+      >
+        Niveaux
+      </Link>
     </nav>
   );
 }

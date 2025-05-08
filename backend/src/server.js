@@ -37,6 +37,7 @@ app.get("/", (req, res) => {
 require("./routes/student.routes")(app);
 require("./routes/teacher.routes")(app);
 require("./routes/internship.routes")(app);
+require("./routes/class.routes")(app);
 
 // Set port, listen for requests
 const PORT = process.env.PORT || 5000;
